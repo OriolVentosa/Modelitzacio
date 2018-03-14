@@ -1,20 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 int mortalitat;
 
 void modificarllista(int [mortalitat], int);
-int recolecta(int [mortalitat], int);
+int arbresutils(int [mortalitat], int);
 
-int main()
+int main(int argc, char *nom[])
 {
     int nombrearbres;
     int anysconreant;
     int permortalitat;
-    int kgtotals=0;
+    int arbres=0;
     int inici;
+//     int despeses=-2000;
     
+    FILE* f = fopen(nom[1], "w");
+    
+    if(f==NULL)
+    {
+        printf("No existeix el fitxer introduit\n");
+        return 1;
+    }
     
     printf("indica arbres a plantar inicialment: ");
     scanf("%d",&nombrearbres);
@@ -28,7 +37,7 @@ int main()
     printf("A quina edat comencem a recol·lectar?: ");
     scanf("%d", &inici);
     
-    printf("indica percentatge mortalitat");
+    printf("Indica percentatge mortalitat: ");
     scanf("%d", &permortalitat);
     
     int edats[mortalitat];
@@ -48,16 +57,23 @@ int main()
             printf("Arbres d'edat %d: %d\n", j, edats[j]);
         }
         
-        kgtotals=recolecta(edats,inici)+kgtotals;
+        arbres=arbresutils(edats,inici);
+        
         modificarllista(edats, permortalitat);
-        printf("Els kg totals de l'any %i són = %i\n",i,kgtotals);
+        
+        printf("Els arbres que produeixen de l'any %i són = %i\n",i,arbres);
+        fprintf(f, "%d:    %d\n", i, arbres);
     }
+    
+    fclose(f);
     
     return 0;
 }
 
 void modificarllista(int edats[mortalitat], int permortalitat)
 {
+    srand(time(NULL));
+    
     int probabilitat[mortalitat];
     int posicio=0;
     
@@ -77,6 +93,10 @@ void modificarllista(int edats[mortalitat], int permortalitat)
             if(random<=probabilitat[j])
             {
                 edats[j]=edats[j]-1;
+                for(int k=j; k<mortalitat;k++)
+                {
+                    probabilitat[k]=probabilitat[k]-1;
+                }
                 break;
             }
             
@@ -85,7 +105,9 @@ void modificarllista(int edats[mortalitat], int permortalitat)
     }
     
     int edatscanvi[mortalitat];
+    
     int a;
+    
     for(int i=0; i<mortalitat; i++)
     {
         a= (i-1+mortalitat)%mortalitat;
@@ -101,7 +123,7 @@ void modificarllista(int edats[mortalitat], int permortalitat)
 }
 
 
-int recolecta(int edats[mortalitat],int inici)
+int arbresutils(int edats[mortalitat],int inici)
 {
     int arbres=0;
 
@@ -109,10 +131,8 @@ int recolecta(int edats[mortalitat],int inici)
     {
         arbres=arbres+edats[i];
     }
-    int kg;
-    kg=2*arbres;
     
-    return kg;    
+    return arbres;    
 }
 
 
