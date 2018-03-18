@@ -29,19 +29,19 @@ int main(int argc, char *nom[])
         return 1;
     }
 
-    printf("Indica arbres a plantar inicialment: ");
+    printf("Indica els arbres que vol plantar inicialment: ");
     scanf("%d",&nombrearbres);
 
 //     printf("Indica els anys de vida màxims: ");
 //     scanf("%d",&mortalitat);
 
-    printf("Indica anys de conreu: ");
+    printf("Indica els anys de conreu: ");
     scanf("%d", &anysconreant);
 
 //     printf("Edat que comencem a recol·lectar: ");
 //     scanf("%d", &inici);
 
-    printf("Indica el percentatge de mortalitat: ");
+    printf("Indica la mitjana d'arbres que es moren a l'any: ");
     scanf("%d", &permortalitat);
 
 //     printf("Indica els quilograms de fruits que genera cada arbre per any: ");
@@ -50,10 +50,10 @@ int main(int argc, char *nom[])
     printf("Indica el preu per quilogram de fruits: ");
     scanf("%d",&pkg);
     
-    printf("Indica despeses minimes per arbre: ");
+    printf("Indica despeses mínimes per arbre: ");
     scanf("%d",&despesesmin);
 
-    printf("Indica despeses maximes per arbre: ");
+    printf("Indica despeses màximes per arbre: ");
     scanf("%d",&despesesmax);
     
     int edats[mortalitat];
@@ -76,16 +76,16 @@ int main(int argc, char *nom[])
 
         kg=kgrecolectats(edats);
         
-        beneficisanuals=pkg*kg;
+        beneficisanuals=pkg*kg-consumanual(edats,despesesmin, despesesmax);
         
-        despeses=despeses-consumanual(edats,despesesmin, despesesmax)+beneficisanuals;
+        despeses=despeses+beneficisanuals;
         
         modificarllista(edats, permortalitat);
 
         printf("Els kg que es produeixen l'any %i són = %i\n",i,kg);
         printf("Les despeses de l'any %i són = %lld\n",i,despeses);
         
-        fprintf(f, "%d:    %lld   %lld\n", i, beneficisanuals , despeses);
+        fprintf(f, "%d:    %lld   %lld\n", i, beneficisanuals , despeses);    //any, diners guanyats, com estem actualment
     }
 
     fclose(f);
@@ -109,6 +109,7 @@ void modificarllista(int edats[mortalitat], int permortalitat)
     int random;
     for(int i=0;i<permortalitat;i++) //percentatge de mort
     {
+  //      printf("random %d\n", contararbres);
         random=rand()%posicio;  //arreglar random
 //         printf("random %d \n", random);
         for(int j=0;j<mortalitat;j++)
@@ -116,26 +117,27 @@ void modificarllista(int edats[mortalitat], int permortalitat)
             if(random<=probabilitat[j])
             {
                 edats[j]=edats[j]-1;
+
                 for(int k=j; k<mortalitat;k++)
                 {
                     probabilitat[k]=probabilitat[k]-1;
                 }
+                posicio=posicio-1;
                 break;
             }
-
         }
-
     }
 
     int edatscanvi[mortalitat];
 
     int a;
-
+    
     for(int i=0; i<mortalitat; i++)
     {
         a= (i-1+mortalitat)%mortalitat;
         edatscanvi[i]=edats[a];
     }
+
 
     for(int i=0; i<mortalitat; i++)
     {
@@ -157,13 +159,15 @@ int kgrecolectats(int edats[mortalitat])
         if(i<31)
         {
             any = (i*i)/6;
+//            printf("Valor d'arbres d'edat %d %f\n", i,any);
             any = any*edats[i];
             anyint=any;
         }
         
         else
         {
-            any=((-1/10)*i*i)+250; 
+            any=-((i*i)/10)+250;
+//            printf("Valor d'arbres d'edat %d %f\n", i,any);
             any = any*edats[i];
             anyint=any;
             if(anyint<0) anyint=0;
