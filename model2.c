@@ -5,7 +5,7 @@
 
 int mortalitat=50;
 int despeseslimit=1e6;  //nou
-int plantar = 50;       //nou
+int plant = 50;       //nou
 int anybenef;           //nou
 
 void modificarllista(int [mortalitat], int);
@@ -17,7 +17,7 @@ int despesesarbre(int, int, int);
 
 int main(int argc, char *nom[])
 {
-    int nombrearbres;
+//     int nombrearbres;
     int anysconreant;
     int permortalitat;
     int desxar;  //nou
@@ -39,8 +39,8 @@ int main(int argc, char *nom[])
         return 1;
     }
 
-    printf("Indica els arbres que vol plantar inicialment: ");
-    scanf("%d",&nombrearbres);
+//     printf("Indica els arbres que vol plantar inicialment: ");
+//     scanf("%d",&nombrearbres);
 
 //     printf("Indica els anys de vida màxims: ");
 //     scanf("%d",&mortalitat);
@@ -68,14 +68,14 @@ int main(int argc, char *nom[])
     
     int edats[mortalitat];
     
-    desxar = despesesarbre(despesesmax, pkg, plantar);
+    desxar = despesesarbre(despesesmax, pkg, plant);
     
     for(int i=0; i<mortalitat; i++)
     {
         edats[i]=0;
     }
 
-    edats[0]= nombrearbres;
+//     edats[0]= nombrearbres;
     
     for(int i=0; i<anysconreant; i++)
     {
@@ -85,18 +85,23 @@ int main(int argc, char *nom[])
         {
             printf("Arbres d'edat %d: %d\n", j, edats[j]);
         }*/
-
+        
         kg=kgrecolectats(edats);
         
         beneficisanuals=pkg*kg-consumanual(edats,despesesmin, despesesmax);
-        
+     
         despeses=despeses+beneficisanuals;
         
         modificarllista(edats, permortalitat);
-
-        edats[0]=plantar(despesesseg,)
+        
+        if(i<(anysconreant*3/2))
+        {
+            edats[0]=plantar(despesesseg,&llista1, &llista2, &aplan, desxar,i);
+        }
+        
         printf("Els kg que es produeixen l'any %i són = %i\n",i,kg);
         printf("Les despeses de l'any %i són = %lld\n",i,despeses);
+        printf("Es planten %i arbres \n", edats[0]);
         
         fprintf(f, "%d:    %lld   %lld\n", i, beneficisanuals , despeses);    //any, diners guanyats, com estem actualment
     }
@@ -109,7 +114,7 @@ int main(int argc, char *nom[])
 void modificarllista(int edats[mortalitat], int permortalitat)
 {
 //     srand(time(NULL));
-
+    
     int probabilitat[mortalitat];
     int posicio=0;
 
@@ -123,14 +128,17 @@ void modificarllista(int edats[mortalitat], int permortalitat)
     for(int i=0;i<permortalitat;i++) //percentatge de mort
     {
   //      printf("random %d\n", contararbres);
+        
+        if(posicio!=0)
+        {
         random=rand()%posicio;  //arreglar random
 //         printf("random %d \n", random);
+
         for(int j=0;j<mortalitat;j++)
         {
             if(random<=probabilitat[j])
             {
                 edats[j]=edats[j]-1;
-
                 for(int k=j; k<mortalitat;k++)
                 {
                     probabilitat[k]=probabilitat[k]-1;
@@ -139,8 +147,9 @@ void modificarllista(int edats[mortalitat], int permortalitat)
                 break;
             }
         }
+        }
     }
-
+    
     int edatscanvi[mortalitat];
 
     int a;
@@ -150,13 +159,14 @@ void modificarllista(int edats[mortalitat], int permortalitat)
         a= (i-1);
         edatscanvi[i]=edats[a];
     }
-    
+
     edatscanvi[0]=0;
 
     for(int i=0; i<mortalitat; i++)
     {
         edats[i]=edatscanvi[i];
     }
+
 }
 
 
@@ -215,8 +225,8 @@ int consumanual(int arbres[mortalitat],int dminima, int dmaxima)
 int plantar(int despeses, int* anys, int* arbres, int* n, int desxar, int anyactual) //despeses segure/llista arbres plantats/llista anys quan s'ha plantats/longitud llista
 {
     int arbrespl=0;
-    
-    while()
+    int ncopia = *n;
+    while(1<2)
     {
         despeses=despeses+desxar;
         arbrespl+=1;
@@ -230,14 +240,18 @@ int plantar(int despeses, int* anys, int* arbres, int* n, int desxar, int anyact
     
     if(arbrespl != 0)
     {
-        
-        int *n*sizeof(int) + *anys = (int*) malloc(sizeof(int));
-        int *n*sizeof(int) + *arbres = (int*) malloc(sizeof(int));
+        int *adres = anys + ncopia*sizeof(int);
+        adres = (int*) malloc(sizeof(int));
+        adres= arbres + ncopia*sizeof(int);
+        adres = (int*) malloc(sizeof(int));
         
         *n = *n + 1;
-    
-        *n*sizeof(int) + *anys = anyactual;
-        *n*sizeof(int) + *arbres = arbrespl;
+        ncopia = *n;
+        
+        adres = ncopia*sizeof(int) + anys;
+        *adres = anyactual;
+        adres= ncopia*sizeof(int) + arbres;
+        *adres = arbrespl;
     }
     
     if(anyactual == *anys + anybenef)
@@ -274,7 +288,7 @@ int despesesarbre(int dmaxima, int preukg, int plantar)
             any = (i*i)/6;
 //            printf("Valor d'arbres d'edat %d %f\n", i,any);
             anyint=any*preukg;
-            plantar= plantar+anyiny-dmaxima;
+            plantar= plantar+anyint-dmaxima;
     }
     
     return plantar;
