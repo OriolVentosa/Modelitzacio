@@ -58,19 +58,6 @@ int consumanualsegur(int arbres[mortalitat], int arbresplantats[anybenef],int dm
 {
     
     int total=0;
-    
-    for(int i=0; i<mortalitat;i++)
-    {
-        total=total+arbres[i];
-        printf("Arbres d'edat %d: %d\n", i, arbres[i]);
-    }
-    
-    printf("Arbres totals %d\n", total);
-    for(int i=0; i<anybenef; i++)
-    {
-        total = total- arbresplantats[i];
-        printf("Arbres plantats %d: %d\n", i, arbresplantats[i]);
-    }
         
     int aleatori = dmaxima-dminima;
     

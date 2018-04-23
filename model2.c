@@ -8,7 +8,7 @@
 // #include <time.h>
 
 int mortalitat=50;
-int despeseslimit=-1e5;  //nou
+int despeseslimit=-1e4;  //nou
 int plant = -50;       //nou
 int anybenef;           //nou
 
@@ -25,7 +25,7 @@ int main(int argc, char *nom[])
     int kgp=0;
     long long int beneficisanuals;
     int pkg;
-    long long int despeses =-20000;
+    long long int despeses =-100;
     int despesesseg = despeses;
     int beneficisseg;
     
@@ -71,7 +71,7 @@ int main(int argc, char *nom[])
     
     int llista1[anybenef];
     int llista2[anybenef];
-
+    
     for(int i = 0; i< anybenef; i++)
     {
         llista1[i]=0;
@@ -81,9 +81,8 @@ int main(int argc, char *nom[])
     {
         edats[i]=0;
     }
-    printf("any benef %d", anybenef);
 //     edats[0]= nombrearbres;
-    edats[0]=plantar(&despesesseg,llista1, llista2, edats, &contador, desxar,0);
+    edats[0]=plantar(&despesesseg,&despeses, llista1, llista2, edats, &contador, desxar,0);
 
     for(int i=1; i<anysconreant; i++)
     {
@@ -100,21 +99,30 @@ int main(int argc, char *nom[])
         despeses+=beneficisanuals;
 
         //Beneficis i despeses modificades
-        kgp = kgrecolectatsegurs(edats, llista2);
+        kgp = kgrecolectatsegurs(edats, llista2, i);
         printf("KGP %d\n", kgp);
         beneficisseg = pkg*kgp-consumanualsegur(edats, llista2, despesesmin, despesesmax);
         despesesseg+= beneficisseg;
         
         modificarllista(edats, permortalitat);
-
-        edats[0]=plantar(&despesesseg,llista1, llista2, edats, &contador, desxar,i);
-
+        
+        if(i<(anysconreant-anybenef))
+        {
+            edats[0]=plantar(&despesesseg,&despeses, llista1, llista2, edats, &contador, desxar,i);
+        }
 //        printf("Els kg que es produeixen l'any %i són = %i\n",i,kg);
 //        printf("Les despeses de l'any %i són = %lld\n",i,despeses);
         printf("Despeses segures %i\n",despesesseg);
-        fprintf(f, "%d:    %lld   %lld\n", i, beneficisanuals , despeses);    //any, diners guanyats, com estem actualment
+        fprintf(f, "%d:    %lld   %lld\n", i, beneficisanuals , despeses);  //any, diners guanyats, com estem actualment
     }
-
+    int total=0;
+    for(int i=0; i<mortalitat;i++)
+    {
+        total=total+edats[i];
+    }
+    printf("Arbres totals = %i", total);
+    
+    
     fclose(f);
 
     return 0;

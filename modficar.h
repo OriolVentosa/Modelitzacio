@@ -1,9 +1,9 @@
 
-int mortalitat, anybenef, despeseslimit;
+int mortalitat, anybenef, despeseslimit, plant;
 
 void modificarllista(int [mortalitat], int);
 
-int plantar(int*, int [anybenef],int[anybenef], int [mortalitat],int*, int, int);
+int plantar(int*, long long int*, int [anybenef],int[anybenef], int [mortalitat],int*, int, int);
 
 void modificarllista(int edats[mortalitat], int permortalitat)
 {
@@ -43,9 +43,9 @@ void modificarllista(int edats[mortalitat], int permortalitat)
             }
         }
     }
-
     
     int edatscanvi[mortalitat];
+    
     for(int i=0; i<mortalitat; i++)
     {
         edatscanvi[i]=0;
@@ -55,7 +55,7 @@ void modificarllista(int edats[mortalitat], int permortalitat)
     
     for(int i=0; i<mortalitat-1; i++)
     {
-        a= (i-1);
+        a= (i-1+mortalitat)%mortalitat;
         edatscanvi[i]=edats[a];
     }
 
@@ -67,17 +67,19 @@ void modificarllista(int edats[mortalitat], int permortalitat)
     }
 }
 
-int plantar(int *despeses, int anys[anybenef], int arbres[anybenef], int arbrestotals[mortalitat],int *contador, int desxar, int anyactual) //despeses segure/llista arbres plantats/llista anys quan s'ha plantats/longitud llista
+int plantar(int *despeses, long long int *despesesb, int anys[anybenef], int arbres[anybenef], int arbrestotals[mortalitat],int *contador, int desxar, int anyactual) //despeses segure/llista arbres plantats/llista anys quan s'ha plantats/longitud llista
 {
     int arbrespl=0;
 
     while(1<2)
     {
         *despeses=*despeses+desxar;
+        *despesesb=*despesesb+plant;
         arbrespl+=1;
         if(*despeses<despeseslimit)
         {
             *despeses=*despeses-desxar;
+            *despesesb=*despesesb-plant;
             arbrespl-=1;
             break;
         }
@@ -93,10 +95,9 @@ int plantar(int *despeses, int anys[anybenef], int arbres[anybenef], int arbrest
         }
         *contador-=1;
     }
-    
+
     anys[*contador]=anyactual;
     arbres[*contador]=arbrespl;
-    arbrestotals[anyactual]=arbrespl;
     
     *contador+=1;
     return arbrespl;
