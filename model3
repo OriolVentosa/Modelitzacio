@@ -1,0 +1,151 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include "consum.h"
+#include "kg.h"
+#include "modficar.h"
+
+// #include <time.h>
+
+int mortalitat=50;
+int despeseslimit=-1e4;  //nou
+int plant = -50;       //nou
+int anybenef;           //nou
+
+
+int main(int argc, char *nom[])
+{
+//     int nombrearbres;
+    int edats[mortalitat];
+    int anysconreant;
+    int arbresmax;
+    int permortalitat;
+    int desxar;  //nou
+    int contador=0;
+    int kg=0;
+    int kgp=0;
+    int total=0;
+    long long int beneficisanuals;
+    int pkg;
+    long long int despeses =-100;
+    int despesesseg = despeses;
+    int beneficisseg;
+    
+    int despesesmin, despesesmax;
+    
+    FILE* f = fopen(nom[1], "w");
+
+    if(f==NULL)
+    {
+        printf("No existeix el fitxer introduit\n");
+        return 1;
+    }
+
+//     printf("Indica els arbres que vol plantar inicialment: ");
+//     scanf("%d",&nombrearbres);
+
+//     printf("Indica els anys de vida màxims: ");
+//     scanf("%d",&mortalitat);
+
+    printf("Indica els anys de conreu: ");
+    scanf("%d", &anysconreant);
+    
+    printf("Quants arbres podem plantar com a màxim: ");
+    scanf("%d", &arbresmax);
+
+//     printf("Edat que comencem a recol·lectar: ");
+//     scanf("%d", &inici);
+
+    printf("Indica la mitjana d'arbres que es moren a l'any: ");
+    scanf("%d", &permortalitat);
+
+//     printf("Indica els quilograms de fruits que genera cada arbre per any: ");
+//     scanf("%d",&quantskg);
+
+    printf("Indica el preu per quilogram de fruits: ");
+    scanf("%d",&pkg);
+    
+    printf("Indica despeses mínimes per arbre: ");
+    scanf("%d",&despesesmin);
+
+    printf("Indica despeses màximes per arbre: ");
+    scanf("%d",&despesesmax);
+    
+    printf("\n");
+    
+    desxar = despesesarbre(0,despesesmax, pkg, plant);
+    
+    int llista1[anybenef];
+    int llista2[anybenef];
+    
+    for(int i = 0; i< anybenef; i++)
+    {
+        llista1[i]=0;
+        llista2[i]=0;
+    }
+    for(int i=0; i<mortalitat; i++)
+    {
+        edats[i]=0;
+    }
+    
+//     edats[0]= nombrearbres;
+    edats[0]=plantar(&despesesseg,&despeses, llista1, llista2, edats, &contador, desxar,0,total,arbresmax);
+    
+    for(int i=1; i<anysconreant; i++)
+    {
+        printf("Any %d\n", i);
+
+//         for(int j=0; j<mortalitat; j++)
+//         {
+//             printf("Arbres d'edat %d: %d\n", j, edats[j]);
+//         }
+        
+        //Beneficis i despeses reals
+        kg=kgrecolectats(edats);
+        beneficisanuals=pkg*kg-consumanual(edats,despesesmin, despesesmax);
+        despeses+=beneficisanuals;
+
+        //Beneficis i despeses modificades
+        printf("KGP %d\n", kgp);
+        beneficisseg = pkg*kgp-consumanualsegur(edats, llista2, despesesmin, despesesmax);
+        despesesseg+= beneficisseg;
+        
+        despesesseg=armor(edats, llista2, despesesseg, contador, despesesmax, pkg);
+        printf("Despeses segures %i\n",despesesseg);
+        for(int k=0; k<contador; k++)
+        {
+            printf("%d: %d  %d\n", k, edats[k], llista2[contador-1-k]);
+        }
+        
+        total=0;
+        for(int i=0;i<mortalitat;i++)
+        {
+            total=total+edats[i];
+        }
+        printf("Arbres totals %i\n", total);
+        modificarllista(edats, permortalitat);
+//         for(int i=0;i<mortalitat;i++)
+//         {
+//             printf("%d: %d\n", i, edats[i]);
+//         }
+        
+        kgp = kgrecolectatsegurs(edats, llista2, i);
+        
+        if(i<(anysconreant-anybenef))
+        {
+            printf("Any benefici: %d\n", anybenef);
+            edats[0]=plantar(&despesesseg,&despeses, llista1, llista2, edats, &contador, desxar,i,total, arbresmax);
+        }
+        printf("\n");
+//        printf("Els kg que es produeixen l'any %i són = %i\n",i,kg);
+//        printf("Les despeses de l'any %i són = %lld\n",i,despeses);
+        
+        fprintf(f, "%d:    %lld   %lld\n", i, beneficisanuals , despeses);  //any, diners guanyats, com estem actualment
+    }
+
+    
+    
+    fclose(f);
+
+    return 0;
+}
