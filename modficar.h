@@ -1,9 +1,10 @@
-
-int mortalitat, anybenef, despeseslimit;
+int mortalitat, anybenef, despeseslimit, plant, pr=0;
 
 void modificarllista(int [mortalitat], int);
 
-int plantar(int*, int [anybenef],int[anybenef], int [mortalitat],int*, int, int);
+int plantar(int*, long long int*, int [anybenef],int[anybenef], int [mortalitat],int*, int, int, int, int);
+
+int armor(int[mortalitat], int[anybenef], int, int, int, int);  //treu les despeses dels arbres que moren
 
 void modificarllista(int edats[mortalitat], int permortalitat)
 {
@@ -43,9 +44,9 @@ void modificarllista(int edats[mortalitat], int permortalitat)
             }
         }
     }
-
     
     int edatscanvi[mortalitat];
+    
     for(int i=0; i<mortalitat; i++)
     {
         edatscanvi[i]=0;
@@ -55,7 +56,7 @@ void modificarllista(int edats[mortalitat], int permortalitat)
     
     for(int i=0; i<mortalitat-1; i++)
     {
-        a= (i-1);
+        a= (i-1+mortalitat)%mortalitat;
         edatscanvi[i]=edats[a];
     }
 
@@ -67,19 +68,32 @@ void modificarllista(int edats[mortalitat], int permortalitat)
     }
 }
 
-int plantar(int *despeses, int anys[anybenef], int arbres[anybenef], int arbrestotals[mortalitat],int *contador, int desxar, int anyactual) //despeses segure/llista arbres plantats/llista anys quan s'ha plantats/longitud llista
+int plantar(int *despeses, long long int *despesesb, int anys[anybenef], int arbres[anybenef], int arbrestotals[mortalitat],int *contador, int desxar, int anyactual, int total, int arbresmax) //despeses segure/llista arbres plantats/llista anys quan s'ha plantats/longitud llista
 {
     int arbrespl=0;
-
-    while(1<2)
+    int a=0;
+    while(1<2)  //el programa la palma quan fa canvis a total
     {
         *despeses=*despeses+desxar;
+        *despesesb=*despesesb+plant;
         arbrespl+=1;
+        total+=1;
         if(*despeses<despeseslimit)
         {
             *despeses=*despeses-desxar;
+            *despesesb=*despesesb-plant;
             arbrespl-=1;
+            total-=1;
             break;
+        }
+        
+        if(total>arbresmax)
+        {
+            a=total-arbresmax;
+            *despeses=*despeses-(a*desxar);
+            *despesesb=*despesesb-(a*plant);
+            arbrespl-=a;
+            total=arbresmax;
         }
     }
     
@@ -93,11 +107,23 @@ int plantar(int *despeses, int anys[anybenef], int arbres[anybenef], int arbrest
         }
         *contador-=1;
     }
-    
+
     anys[*contador]=anyactual;
     arbres[*contador]=arbrespl;
-    arbrestotals[anyactual]=arbrespl;
-    
     *contador+=1;
+
     return arbrespl;
+}
+
+int armor(int edats[mortalitat], int arbres[anybenef], int despesessegures, int contador,int despesesmax, int pkg)
+{
+    int a,b,c;
+    for(int i=0; i<contador; i++)
+    {
+        a=edats[i]-arbres[contador-1-i];
+        b=despesesarbre(i, despesesmax, pkg, plant);
+        c+=a*b;
+        arbres[contador-1-i]=edats[i];
+    }
+    return despesessegures+c;
 }
