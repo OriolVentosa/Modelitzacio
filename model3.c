@@ -3,13 +3,13 @@
 #include <math.h>
 #include "consum.h"
 #include "kg.h"
-#include "modficar.h"
+#include "modificar.h"
 
 // #include <time.h>
 
-int mortalitat=50;
-int despeseslimit=-1e4;  //nou
-int plant = -50;       //nou
+int mortalitat=50;  //hauriem de preguntar-ho
+int despeseslimit=-1e4;  //nou  //preguntar-ho
+int plant = -50;       //nou    //preguntar-ho tambe?
 int anybenef;           //nou
 
 
@@ -18,14 +18,16 @@ int main(int argc, char *nom[])
 //     int nombrearbres;
     int edats[mortalitat];
     int anysconreant;
-    int permortalitat;
+    int arbresmax;
+    double permortalitat;
     int desxar;  //nou
     int contador=0;
     int kg=0;
-    int kgp=0;
+    int kgp=0;  //kg segurs
+//     int hola=0;
     long long int beneficisanuals;
-    int pkg;
-    long long int despeses =-100;
+    int pkg;    //preu per kg
+    long long int despeses =-1000;
     int despesesseg = despeses;
     int beneficisseg;
     
@@ -39,23 +41,17 @@ int main(int argc, char *nom[])
         return 1;
     }
 
-//     printf("Indica els arbres que vol plantar inicialment: ");
-//     scanf("%d",&nombrearbres);
-
-//     printf("Indica els anys de vida màxims: ");
-//     scanf("%d",&mortalitat);
-
     printf("Indica els anys de conreu: ");
     scanf("%d", &anysconreant);
+    
+    printf("Quants arbres podem plantar com a màxim: ");
+    scanf("%d", &arbresmax);
 
 //     printf("Edat que comencem a recol·lectar: ");
 //     scanf("%d", &inici);
 
-    printf("Indica la mitjana d'arbres que es moren a l'any: ");
-    scanf("%d", &permortalitat);
-
-//     printf("Indica els quilograms de fruits que genera cada arbre per any: ");
-//     scanf("%d",&quantskg);
+    printf("Indica percentatge arbres que es moren a l'any: ");
+    scanf("%lf", &permortalitat);
 
     printf("Indica el preu per quilogram de fruits: ");
     scanf("%d",&pkg);
@@ -66,24 +62,23 @@ int main(int argc, char *nom[])
     printf("Indica despeses màximes per arbre: ");
     scanf("%d",&despesesmax);
     
+    printf("\n");
     
-    desxar = despesesarbre(despesesmax, pkg, plant);
+    desxar = despesesarbre(0,despesesmax, pkg, plant);
     
-    int llista1[anybenef];
     int llista2[anybenef];
     
-    for(int i = 0; i< anybenef; i++)
+    for(int i = 0; i<anybenef; i++)
     {
-        llista1[i]=0;
         llista2[i]=0;
     }
     for(int i=0; i<mortalitat; i++)
     {
         edats[i]=0;
     }
-//     edats[0]= nombrearbres;
-    edats[0]=plantar(&despesesseg,&despeses, llista1, llista2, edats, &contador, desxar,0);
-
+    
+    edats[0]=plantar(&despesesseg,&despeses, llista2, edats, &contador, desxar,0,arbresmax);
+    
     for(int i=1; i<anysconreant; i++)
     {
         printf("Any %d\n", i);
@@ -94,39 +89,49 @@ int main(int argc, char *nom[])
 //         }
         
         //Beneficis i despeses reals
+        
+        printf("Despeses 1 %lld\n", despeses);
+        
         kg=kgrecolectats(edats);
         beneficisanuals=pkg*kg-consumanual(edats,despesesmin, despesesmax);
+        
         despeses+=beneficisanuals;
+        
+        printf("Kg recolectats %d\n", kg);
+        printf("Beneficis anuals %lld despeses 2 %lld\n",beneficisanuals, despeses);
+        
 
         //Beneficis i despeses modificades
+        
         kgp = kgrecolectatsegurs(edats, llista2, i);
-        printf("KGP %d\n", kgp);
-        beneficisseg = pkg*kgp-consumanualsegur(edats, llista2, despesesmin, despesesmax);
+        beneficisseg = pkg*kgp-consumanualsegur(edats,despesesmin, despesesmax);
         despesesseg+= beneficisseg;
         
-        modificarllista(edats, permortalitat);
+        despesesseg=armor(edats, llista2, despesesseg, contador, despesesmax, pkg);
+        printf("Despeses segures %i\n",despesesseg);
         
+
+//         for(int i=0; i<mortalitat; i++)
+//         {
+//             hola=hola+edats[i];
+//         }
+//         printf("Arbres totals=%d\n",hola);
+
+        modificarllista(edats, permortalitat);
+
         if(i<(anysconreant-anybenef))
         {
-            edats[0]=plantar(&despesesseg,&despeses, llista1, llista2, edats, &contador, desxar,i);
+            printf("Any benefici: %d\n", anybenef);
+            edats[0]=plantar(&despesesseg,&despeses, llista2, edats, &contador, desxar,i, arbresmax);
         }
+        
+        printf("\n");
 //        printf("Els kg que es produeixen l'any %i són = %i\n",i,kg);
 //        printf("Les despeses de l'any %i són = %lld\n",i,despeses);
-        printf("Despeses segures %i\n",despesesseg);
         fprintf(f, "%d:    %lld   %lld\n", i, beneficisanuals , despeses);  //any, diners guanyats, com estem actualment
     }
-    int total=0;
-    for(int i=0; i<mortalitat;i++)
-    {
-        total=total+edats[i];
-    }
-    printf("Arbres totals = %i", total);
-    
     
     fclose(f);
 
     return 0;
 }
-
-
-

@@ -8,7 +8,7 @@ int kgrecolectats(int edats[mortalitat])
     int kg=0;
     float any;
     int anyint;
-    
+
     for(int i=0;i<mortalitat;i++)
     {
         if(i<31)
@@ -18,7 +18,7 @@ int kgrecolectats(int edats[mortalitat])
             any = any*edats[i];
             anyint=any;
         }
-        
+
         else
         {
             any=-((i*i)/10)+250;
@@ -27,6 +27,7 @@ int kgrecolectats(int edats[mortalitat])
             anyint=any;
             if(anyint<0) anyint=0;
         }
+
         kg=kg+anyint;
     }
 
@@ -48,7 +49,7 @@ int kgrecolectatsegurs(int arbres[mortalitat], int arbresplantats[anybenef], int
             any = any*arbres[i];
             anyint=any;
         }
-        
+
         else
         {
             any=-((i*i)/10)+250;
@@ -60,24 +61,24 @@ int kgrecolectatsegurs(int arbres[mortalitat], int arbresplantats[anybenef], int
     }
     if(anyactual<=anybenef)
     {
-        for(int i=0;i<anybenef;i++)
+        for(int i=0;i<=anyactual;i++)
         {
-            any = ((anyactual-1-i)*(anyactual-1-i))/6;
-            any = any*arbresplantats[i];
+            any = (i*i)/6;
+            any = any*arbres[i];
             anyint=any;
             kg=kg-anyint;
-        }   
+        }
     }
     else
     {
         for(int i=0;i<anybenef;i++)
         {
-            any = ((anybenef-i)*(anybenef-i))/6;
-            any = any*arbresplantats[i];
+            any = (i*i)/6;
+            any = any*arbres[i];
             anyint=any;
             kg=kg-anyint;
         }
     }
-    
+
     return kg;
 }
