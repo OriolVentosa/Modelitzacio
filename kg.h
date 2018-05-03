@@ -14,7 +14,6 @@ int kgrecolectats(int edats[mortalitat])
         if(i<31)
         {
             any = (i*i)/6;
-//            printf("Valor d'arbres d'edat %d %f\n", i,any);
             any = any*edats[i];
             anyint=any;
         }
@@ -22,7 +21,6 @@ int kgrecolectats(int edats[mortalitat])
         else
         {
             any=-((i*i)/10)+250;
-//            printf("Valor d'arbres d'edat %d %f\n", i,any);
             any = any*edats[i];
             anyint=any;
             if(anyint<0) anyint=0;

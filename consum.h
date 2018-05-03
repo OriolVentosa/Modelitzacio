@@ -3,6 +3,7 @@ int anybenef;
 int pr;
 
 int despesesarbre(int,int, int, int);
+int anycomp(int, int, int);
 int consumanual(int [mortalitat],int, int);
 int consumanualsegur(int [mortalitat],int,int);
 
@@ -13,7 +14,6 @@ int despesesarbre(int k,int dmaxima, int preukg, int plant) //negatiu
     for(int i=k;i<31;i++)
     {
             any = (i*i)/6;
-//            printf("Valor d'arbres d'edat %d %f\n", i,any);
             anyint=any*preukg;
             if(anyint>dmaxima) 
             {
@@ -29,13 +29,41 @@ int despesesarbre(int k,int dmaxima, int preukg, int plant) //negatiu
     for(int i=k;i<anybenef;i++)
     {
             any = (i*i)/6;
-//            printf("Valor d'arbres d'edat %d %f\n", i,any);
             anyint=any*preukg;
             plant= plant+anyint-dmaxima;
     }
     
     return plant;
 }
+
+int anycomp(int dmaxima, int preukg, int plant)
+{
+
+    float any;
+    int anyint;
+    for(int i=0;i<31;i++)
+    {
+        if(i<31)
+        {
+            any = (i*i)/6;
+            anyint=any;
+        }
+
+        else
+        {
+            any=-((i*i)/10)+250;
+            anyint=any;
+            if(anyint<0) anyint=0;
+        }
+
+        plant=plant+anyint-dmaxima;
+        if(plant>0) return i;
+    }
+    
+    return 0;
+    
+}
+
 
 int consumanual(int arbres[mortalitat],int dminima, int dmaxima)
 {

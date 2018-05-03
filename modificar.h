@@ -28,8 +28,6 @@ void modificarllista(int edats[mortalitat], double permortalitat)
     int random;
     for(int i=0;i<permortalitat;i++) //percentatge de mort
     {
-  //      printf("random %d\n", contararbres);
-
         if(posicio!=0)
         {
             random=rand()%posicio;  //arreglar random
@@ -85,7 +83,7 @@ int plantar(int *despeses, long long int *despesesb, int arbres[anybenef], int a
     }
 
     
-    if(total<arbresmax)    //i si li posem a aquest if que també compleixi que despeses>despeseslimit?
+    if(total<arbresmax)
     {
         while(1<2)
         {
@@ -104,16 +102,12 @@ int plantar(int *despeses, long long int *despesesb, int arbres[anybenef], int a
         }
     }
 
-    printf("Arbres totals %i\n", total);
-    printf("Arbres plantats %d\n",arbrespl);
-    
-
     
     if(*contador == anybenef)
     {
         for(int i=0; i<anybenef-1; i++)
         {
-            arbres[i]=arbres[i+1];    //llista tira cap amunt
+            arbres[i]=arbres[i+1];
         }
         *contador-=1;
     }
@@ -133,7 +127,7 @@ int armor(int edats[mortalitat], int arbres[anybenef], int despesessegures, int 
         a=edats[i]-arbres[contador-1-i];
         b=despesesarbre(i, despesesmax, pkg, plant);
         c+=a*b;
-        arbres[contador-1-i]=edats[i];    //passar-ho a despres de a=... no canviara res
+        arbres[contador-1-i]=edats[i];
     }
     return despesessegures+c;
 }
