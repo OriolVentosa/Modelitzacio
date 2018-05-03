@@ -17,7 +17,7 @@ int main(int argc, char *nom[])
     int anysconreant;
     int arbresmax;
     double permortalitat;
-    int desxar,stop;  //nou
+    int desxar, stop, total=0;  //nou
     int contador=0;
     int kg=0;
     int kgp=0;  //kg segurs
@@ -66,6 +66,7 @@ int main(int argc, char *nom[])
     {
         llista2[i]=0;
     }
+    
     for(int i=0; i<mortalitat; i++)
     {
         edats[i]=0;
@@ -99,9 +100,17 @@ int main(int argc, char *nom[])
             edats[0]=plantar(&despesesseg,&despeses, llista2, edats, &contador, desxar,i, arbresmax);
         }
         
+        
+        for(int i=0; i<mortalitat;i++)
+        {
+            total=total+edats[i];
+        }
+        
         printf("despeses %lld / kg any: %d\n", despeses, kg);
 
-        fprintf(f, "%d:    %lld   %lld\n", i, beneficisanuals , despeses);  //any, diners guanyats, com estem actualment
+        fprintf(f, "%d:    %lld   %lld  %d\n", i, beneficisanuals , despeses,total);  //any, diners guanyats, com estem actualment
+        
+        total=0;
     }
     
     fclose(f);
