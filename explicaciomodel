@@ -1,0 +1,7 @@
+El nou model té l'objectiu de determinar quan és òptim plantar nous arbres, tenint en compte que no es tenen despeses ni terreny ilimitat. Per fer-ho es van crear noves funcions. 
+La primera té en compte que un arbre no comença a produir beneficis al cap d'uns anys després de ser plantat per determinar quants arbres es poden plantar un any, tenint en compte unes despeses límit.
+L'altre té en compte que un arbre no compença totes les despeses que ha produit al cap de uns anys després de produir beneficis, i en aquest cas determina l'any en que es deixen de plantar arbres.
+En les següents gràfiques observarem com influeixen les aquestes noves funcions al nombre d'arbres plantats i als beneficis, tant els anuals com els acumulats.
+
+Gràfiques arbres:
+Observem que a la grà
