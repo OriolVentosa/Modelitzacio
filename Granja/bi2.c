@@ -22,7 +22,7 @@ int main(int argc, char *nom[])
     double bimax;
     double xb0, xb1;
     
-    for(xb0=35; xb0<=41; xb0+=0.1)
+    for(xb0=32; xb0<=43; xb0+=0.1)
     {
         beneficimax=0;
         for(xb1=-0.01; xb1<=0.01; xb1+=0.0002)

@@ -15,8 +15,9 @@ int main(int argc, char *nom[])
     int mmin=1,mmax=3,var=10;
     double poblacioinicial=1000;
     int periodes=4, extreure=1;
-    double despesainicial=50000+150000, despesacicleperindividu=6, despesatotal; //despesaincial 50€ per porc(1000x50=50000)+instalacions
-    double benefici, bpi=40;
+    double despesainicial=-50000-150000, despesacicleperindividu=6, despesatotal;
+    double bpi=40;
+    double beneficibrut=0, despeses=0;
 
     FILE* f = fopen(nom[1], "w");
 
@@ -26,42 +27,11 @@ int main(int argc, char *nom[])
         return 1;
     }
 
-    /*printf("Períodes totals:");
-    scanf("%i",&n);
-
-    printf("Població inicial:");
-    scanf("%i",&poblacioinicial);
-
-    printf("Cada quants períodes és reprodueixen:"); //cada quants anys, mesos, dies es reprodueixen.
-    scanf("%i",&periodes);
-
-    printf("Percentatge de fertilitat:");
-    scanf("%lf",&xf);
-
-    printf("Percentatge de mortalitat mínima:");
-    scanf("%i",&mmin);
-
-    printf("Percentatge de mortalitat màxima:");
-    scanf("%i",&mmax);
-
-    printf("Percentatge de variança de mortalitat:"); //percentatge que aumenta (tan el mínim com el màxim) al any seguent al de cria
-    scanf("%i",&var);*/
-
-
     printf("Percentatge de benefici lineal:");
     scanf("%lf",&xb1);
     
     printf("Percentatge de benefici quadratic:");
     scanf("%lf",&xb2);
-
-    /*printf("Despesa inicial:");
-    scanf("%lf",&despesainicial);
-
-    printf("Despesa per cicle per individu:");
-    scanf("%lf",&despesacicleperindividu);
-
-    printf("Benefici per individu:");
-    scanf("%lf",&bpi);*/
 
     double p[n+1];
 
@@ -69,13 +39,8 @@ int main(int argc, char *nom[])
     printf("-----------------------------------------\n");
     printf("Població inicial = %g\n",p[0]);
     printf("Despeses inicials = %g\n",despesainicial);
-
-    //printf("Mortalitat al període  = %i\n",mortalitat(p[0],0,periodes,mmin,mmax,var));
-    //printf("Despesa al període 1 = %g\n",p[0]*despesacicleperindividu+despesainicial);
-    //printf("Benefici al període 1 = %g\n",(p[0]*(xb/100)*bpi));
     printf("-----------------------------------------\n");
 
-    benefici=0;
     despesatotal=despesainicial;
 
     for(i=1;i<=n;i++)
@@ -85,36 +50,19 @@ int main(int argc, char *nom[])
         m=(mortalitat(p[i-1],i,periodes,mmin,mmax,var));
         b=(exbenefici(p[i-1],xb1, xb2 ,extreure,i));
         p[i]=p[i-1]+r-m-b;
-//         printf("Fertilitat al període %i = %g\n",i,r);
-//         printf("Mortalitat al període %i = %g\n",i,m);
-//         printf("Percentatge de població que extreiem al període %i = %g\n",i,b);
-// 
-//         //printf("p[i-1]+reproduccio(p[i-1],i,periodes,xf) = %lf\n",p[i-1]+r);
-//         //printf("p[i-1]-mortalitat(p[i-1],i,periodes,mmin,mmax,var) = %lf\n",p[i-1]-m);
-//         //printf("p[i-1]-(exbenefici(p[i-1],xb)) = %lf\n",p[i-1]-b);
-// 
-//         printf("Població al període %i = %g\n",i,p[i]);
-//         printf("Despesa al període %i = %g\n",i,p[i-1]*despesacicleperindividu);
-//         printf("Benefici al període %i = %g\n",i,(b*bpi));
-//         printf("-----------------------------------------\n");
-        despesatotal=despesatotal+p[i-1]*despesacicleperindividu;
-        benefici=benefici+(b*bpi);
+
+        despesatotal=despesatotal-p[i-1]*despesacicleperindividu;
+        despeses=despeses-p[i-1]*despesacicleperindividu;
+        despesatotal=despesatotal+(b*bpi);
+        beneficibrut=beneficibrut+(b*bpi);
+        
     }
     
     printf("Població final = %g\n",p[n]);
-    printf("Despesa acumulada al període %i = %g\n",i-1,despesatotal);
-    printf("Benefici acumulat al període %i = %g\n",i-1,benefici);
-    printf("Benefici TOTAL acumulat al període %i = %g\n",i-1,benefici-despesatotal);
-
-    //fprintf(f, "PERIODES:    POBLACIÓ\n");
-
-    /*for(i=0;i<=60;i++)
-    {
-        fprintf(f, "%i:    %g\n", i, p[i]);
-    }*/
+    printf("Benefici TOTAL acumulat al període %i = %g\n",i-1,despesatotal);
+    printf("Benefici brut tota %lf \n", beneficibrut);
+    printf("Despeses totals %lf \n", despeses);
     
-    //fprintf(f, "CADA QUATRE PERIODES:    POBLACIÓ\n");
-
     for(i=0;i<=60;i++)
     {
         if(i % periodes==0)
@@ -223,4 +171,3 @@ double exbenefici(int p, double xb1, double xb2, int extreure, int i) //nombre d
         return 0;
     }
 }
-
