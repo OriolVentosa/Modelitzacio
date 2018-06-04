@@ -1,15 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-//#include <time.h>
 
 double reproduccio(int p, int i, int periodes, double xf);
 double mortalitat(int p, int i, int periodes, int mmin, int mmax, int var);
-double exbenefici(int p, double xb1, double xb2, int extreure, int i);
+double exbenefici(int p, double xb, int extreure, int i);
 
 
 int main(int argc, char *nom[])
 {
+    int i,n=60; //5 anys.
+    double xf=500, xb; //fertilitat, benefici.
+    int mmin=1,mmax=3,var=10;
+    double poblacioinicial=1000;
+    int periodes=4, extreure;
+    double despesainicial=50000+150000, despesacicleperindividu=6, despesatotal; //despesaincial 50€ per porc(1000x50=50000)+instalacions
+    double benefici, bpi=40;
+
     FILE* f = fopen(nom[1], "w");
 
     if(f==NULL)
@@ -18,63 +25,43 @@ int main(int argc, char *nom[])
         return 1;
     }
 
-    double beneficimax;
-    double bimax;
-    double xb0, xb1;
-    
-    for(xb0=32; xb0<=43; xb0+=0.1)
+    printf("Cada quants cicles extreiem els individus: ");
+    scanf("%i",&extreure);
+
+    printf("Percentatge de benefici: ");
+    scanf("%lf",&xb);
+
+    double p[n+1];
+
+    p[0]=poblacioinicial;
+
+    benefici=0;
+    despesatotal=despesainicial;
+
+    fprintf(f, "PERIODES:    POBLACIÓ    DESPESA    BENEFICI BRUT    BENEFICI NET\n");
+
+    for(i=1;i<=n;i++)
     {
-        beneficimax=0;
-        for(xb1=-0.01; xb1<=0.01; xb1+=0.0002)
-        {
-            int inter=1;
-            int i,n=60; //5 anys.
-            double xf=500; //fertilitat, benefici.
-            int mmin=1,mmax=3,var=10;
-            double poblacioinicial=1000;
-            int periodes=4, extreure=1;
-            double despesainicial=50000+150000, despesacicleperindividu=6, despesatotal; //despesaincial 50€ per porc(1000x50=50000)+instalacions
-            double bpi=40;
-            
-            double p[n+1];
+        double r,m,b;
+        r=reproduccio(p[i-1],i,periodes,xf);
+        m=(mortalitat(p[i-1],i,periodes,mmin,mmax,var));
+        b=(exbenefici(p[i-1],xb,extreure,i));
+        p[i]=p[i-1]+r-m-b;
 
-            p[0]=poblacioinicial;
-
-            despesatotal=despesainicial;
-
-            for(i=1;i<=n;i++)
-            {
-                double r,m,b;
-                r=reproduccio(p[i-1],i,periodes,xf);
-                m=(mortalitat(p[i-1],i,periodes,mmin,mmax,var));
-                b=(exbenefici(p[i-1],xb0, xb1 ,extreure,i));
-                p[i]=p[i-1]+r-m-b;
-
-                despesatotal=despesatotal+p[i-1]*despesacicleperindividu+(b*bpi);
-                
-                if(p[i]>1500) 
-                {
-                    inter=0;
-                    break;
-                }
-            }
-            
-            if(inter==1)
-            {
-                if(despesatotal>beneficimax)
-                {
-                    beneficimax=despesatotal;
-                    bimax=xb1;
-                    printf("%lf %lf %lf\n", xb0,bimax, beneficimax);
-                }
-            }
-        }
-        fprintf(f,"%lf %lf\n", xb0, bimax);
+        despesatotal=despesatotal+p[i-1]*despesacicleperindividu;
+        benefici=benefici+(b*bpi);
+        fprintf(f, "%i:        %g        %g        %g            %g\n", i, p[i],despesatotal,benefici,benefici-despesatotal);
     }
-    
-    fclose(f);
-    return 0;
 
+    fclose(f);
+    
+    printf("--------------------------------\n");
+    printf("Si s'extreu població cada %i mesos, s'obté:\n Una despesa de %.16G€\n Un benefici brut de %.16G€\n Un benefici net de %.16G€\n I una mitjana mensual de benefici net de %.16G€\n",extreure, despesatotal, benefici, (benefici-despesatotal), (benefici-despesatotal)/n);
+    printf("--------------------------------\n");
+    printf("Les dades per l'estudi d'aquest model són guardades al fitxer %s\n",nom[1]);
+    printf("--------------------------------\n");
+
+    return 0;
 }
 
 
@@ -153,23 +140,24 @@ double mortalitat(int p, int i, int periodes, int mmin, int mmax, int var) //nom
     }
 }
 
-double exbenefici(int p, double xb1, double xb2, int extreure, int i) //nombre de individus, any/mes/dia exacte, cada quant es reprodueixen.
+double exbenefici(int p, double xb, int extreure, int i) //nombre de individus, any/mes/dia exacte, cada quant es reprodueixen.
 {
     if(i % extreure==0)
     {
-        int b;
-        b=(int)(p*((xb1)/100.))+(p*p*((xb2)/100.));       //modificar aixo (xb+B1*p)
-        if(((p*((xb1)/100.))+(p*p*((xb2)/100.))-b)<0.5)
-        {
-            return b;
-        }
-        else
-        {
-            return b+1;
-        }
+    int b;
+    b=(int)(p*(xb/100.));
+    if(((p*(xb/100.))-b)<0.5)
+            {
+                return b;
+            }
+            else
+            {
+                return b+1;
+            }
     }
     else
     {
         return 0;
     }
 }
+

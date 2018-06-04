@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-//#include <time.h>
 
 double reproduccio(int p, int i, int periodes, double xf);
 double mortalitat(int p, int i, int periodes, int mmin, int mmax, int var);
@@ -19,59 +18,80 @@ int main(int argc, char *nom[])
     }
 
     double beneficimax;
-    double bimax;
+    int inter=1;
+    int i,n=60; //5 anys.
+    double xf=500; //fertilitat, benefici.
+    int mmin=1,mmax=3,var=10;
+    double poblacioinicial=1000;
+    int periodes=4, extreure=1;
+    double despesainicial=-50000-150000, despesacicleperindividu=6, despesatotal; //despesaincial 50€ per porc(1000x50=50000)+instalacions.
+    double bpi=40;
     double xb0, xb1;
-    
-    for(xb0=35; xb0<=41; xb0+=0.1)
+    double bimax;
+    double p[n+1];
+    double xb0max=0,xb1max, beneficimaxmax=0;
+
+    fprintf(f,"B0       B1       BENEFICI TOTAL\n");
+    for(xb0=0; xb0<=50; xb0+=0.1)
     {
-        beneficimax=0;
-        for(xb1=-0.01; xb1<=0.01; xb1+=0.0002)
+        bimax=-0.1;
+        beneficimax=-1e6;
+        for(xb1=-0.1; xb1<=0.1; xb1+=0.0001)
         {
-            int inter=1;
-            int i,n=60; //5 anys.
-            double xf=500; //fertilitat, benefici.
-            int mmin=1,mmax=3,var=10;
-            double poblacioinicial=1000;
-            int periodes=4, extreure=1;
-            double despesainicial=50000+150000, despesacicleperindividu=6, despesatotal; //despesaincial 50€ per porc(1000x50=50000)+instalacions
-            double bpi=40;
-            
-            double p[n+1];
+            inter=1;
+            poblacioinicial=1000;
+            despesainicial=-50000-150000; //despesaincial 50€ per porc(1000x50=50000)+instalacions
 
             p[0]=poblacioinicial;
 
             despesatotal=despesainicial;
 
+            double r,m,b;
+
             for(i=1;i<=n;i++)
             {
-                double r,m,b;
                 r=reproduccio(p[i-1],i,periodes,xf);
                 m=(mortalitat(p[i-1],i,periodes,mmin,mmax,var));
                 b=(exbenefici(p[i-1],xb0, xb1 ,extreure,i));
                 p[i]=p[i-1]+r-m-b;
 
-                despesatotal=despesatotal+p[i-1]*despesacicleperindividu+(b*bpi);
-                
-                if(p[i]>1500) 
+                despesatotal=despesatotal-p[i-1]*despesacicleperindividu;
+                despesatotal=despesatotal+(b*bpi);
+
+                if(p[i]>1090)
                 {
                     inter=0;
                     break;
                 }
+                if(p[i]<0)
+                {
+                    inter = 0;
+                    break;
+                }
             }
-            
+
             if(inter==1)
             {
                 if(despesatotal>beneficimax)
                 {
                     beneficimax=despesatotal;
                     bimax=xb1;
-                    printf("%lf %lf %lf\n", xb0,bimax, beneficimax);
                 }
             }
         }
-        fprintf(f,"%lf %lf\n", xb0, bimax);
+
+        if(beneficimax>0) fprintf(f,"%lf %lf %lf\n", xb0, bimax, beneficimax);
+        else fprintf(f,"%lf %lf %lf\n", xb0, bimax, 0.);
+
+        if(beneficimax>beneficimaxmax)
+        {
+            beneficimaxmax=beneficimax;
+            xb1max=bimax;
+            xb0max=xb0;
+        }
     }
-    
+    printf("Per obtenir el benefici màxim, el B0 òptim és %lf amb B1 = %lf.\nEl benefici que s'obté en aquest cas és: %lf€\n", xb0max, xb1max, beneficimaxmax);
+
     fclose(f);
     return 0;
 
@@ -122,7 +142,6 @@ double mortalitat(int p, int i, int periodes, int mmin, int mmax, int var) //nom
         else
         {
             int j;
-            //srand(time(NULL));
             r=(rand() % (mmax-mmin+1))+mmin;
             j=(int)(p*(r/100));
             if(((p*(r/100))-j)<0.5)
